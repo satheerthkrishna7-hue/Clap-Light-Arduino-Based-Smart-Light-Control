@@ -1,0 +1,82 @@
+// DOUBLE CLAP LIGHT
+// Arduino UNO + KY-038 + Relay
+
+const int soundSensor = 2;   // KY-038 DO → Arduino D2
+const int relayPin = 7;      // Relay IN → Arduino D7
+
+int clapCount = 0;
+bool lightState = false;
+
+unsigned long firstClapTime = 0;
+unsigned long lastClapTime = 0;
+
+const unsigned long clapGap = 700;
+const unsigned long debounce = 200;
+
+void setup() {
+
+  pinMode(soundSensor, INPUT);
+  pinMode(relayPin, OUTPUT);
+
+  // Light OFF when Arduino starts
+  digitalWrite(relayPin, LOW);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // Check if sound sensor detects sound
+  if (digitalRead(soundSensor) == HIGH) {
+
+    // Debounce
+    if (millis() - lastClapTime > debounce) {
+
+      lastClapTime = millis();
+
+      // Count the clap
+      clapCount++;
+
+      Serial.print("Clap: ");
+      Serial.println(clapCount);
+
+      // First clap
+      if (clapCount == 1) {
+        firstClapTime = millis();
+      }
+
+      // Second clap
+      if (clapCount == 2) {
+
+        // Check if second clap came within 700 ms
+        if (millis() - firstClapTime <= clapGap) {
+
+          // Toggle light state
+          lightState = !lightState;
+
+          // Send state to relay
+          digitalWrite(relayPin, lightState);
+
+          if (lightState == true) {
+            Serial.println("LIGHT ON");
+          }
+          else {
+            Serial.println("LIGHT OFF");
+          }
+        }
+
+        // Reset clap counter
+        clapCount = 0;
+      }
+    }
+  }
+
+  // If second clap was too late
+  if (clapCount == 1 &&
+      millis() - firstClapTime > clapGap) {
+
+    clapCount = 0;
+
+    Serial.println("Second clap too late");
+  }
+}
