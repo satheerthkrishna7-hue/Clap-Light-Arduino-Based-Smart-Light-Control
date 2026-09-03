@@ -1,7 +1,7 @@
 Clap Light – Arduino-Based Smart Light Control
 
 
-VEDIO LINK
+-VEDIO LINK
 https://github.com/satheerthkrishna7-hue/Clap-Light-Arduino-Based-Smart-Light-Control/issues/1#issue-5339144428
 
 A simple Arduino-based smart lighting system that uses a KY-038 sound sensor to detect a double clap and control a light through a relay module. The Arduino UNO processes the clap signals and switches the relay ON or OFF, allowing the light to be controlled without a physical switch.
